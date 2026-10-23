@@ -1,7 +1,7 @@
 // Floating WhatsApp CTA, visible on every page (mobile-friendly tap target).
 import { MessageCircle } from "lucide-react";
 
-const PHONE = "919876543210"; // E.164 without "+"
+const PHONE = "6363520417"; // E.164 without "+"
 
 export function FloatingWhatsapp() {
   const href = `https://wa.me/${PHONE}?text=${encodeURIComponent(

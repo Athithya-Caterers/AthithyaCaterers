@@ -31,12 +31,14 @@ export function CartSummary({ compact = false }: { compact?: boolean }) {
         </span>
         <input
           type="number"
-          min={1}
-          max={5000}
+          min={0}
+          max={15000}
           inputMode="numeric"
-          value={guests}
-          onChange={(e) => setGuests(Math.max(1, Number(e.target.value) || 0))}
-          className="w-full rounded-xl border border-border bg-background px-4 py-3 text-lg font-semibold text-foreground outline-none focus:border-primary focus:ring-2 focus:ring-primary/30"
+          value={guests === 0 ? "" : guests}
+          onChange={(e) => setGuests(Number(e.target.value) || 0)}
+          className="w-full rounded-xl border border-border bg-background px-4 py-3 text-lg font-semibold text-foreground outline-none focus:border-primary focus:ring-2 focus:ring-primary/30
+          [&::-webkit-inner-spin-button]:appearance-none
+          [&::-webkit-outer-spin-button]:appearance-none"
         />
       </label>
 
@@ -51,7 +53,7 @@ export function CartSummary({ compact = false }: { compact?: boolean }) {
             <div key={item.id} className="flex items-center justify-between gap-3 rounded-xl bg-background/60 p-2.5">
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-medium">{item.name}</p>
-                <p className="text-xs text-muted-foreground">{formatINR(item.price)} / plate</p>
+                {/* <p className="text-xs text-muted-foreground">{formatINR(item.price)} / plate</p> */}
               </div>
               <div className="flex items-center gap-1.5">
                 <button
@@ -61,22 +63,41 @@ export function CartSummary({ compact = false }: { compact?: boolean }) {
                 >
                   −
                 </button>
-                <span className="w-6 text-center text-sm font-semibold">{qty}</span>
+                {/* <span className="w-6 text-center text-sm font-semibold">{qty}</span>
                 <button
                   onClick={() => setQty(item.id, qty + 1)}
                   className="grid h-7 w-7 place-items-center rounded-full bg-primary text-primary-foreground"
                   aria-label="Increase"
                 >
                   +
-                </button>
+                </button> */}
               </div>
             </div>
           ))
         )}
       </div>
 
+        {/* Custom input for menu */}
+        
+      {/* <label className="mt-5 block">
+        <span className="mb-2 flex items-center gap-2 text-sm font-medium text-muted-foreground">
+          <Users className="h-4 w-4 text-primary" /> Guest count
+        </span>
+        <input
+          type="number"
+          // min={1}
+          max={15000}
+          inputMode="numeric"
+          value={guests}
+          onChange={(e) => setGuests(Math.max(1, Number(e.target.value) || 0))}
+          className="w-full rounded-xl border border-border bg-background px-4 py-3 text-lg font-semibold text-foreground outline-none focus:border-primary focus:ring-2 focus:ring-primary/30
+          [&::-webkit-inner-spin-button]:appearance-none
+          [&::-webkit-outer-spin-button]:appearance-none"
+        />
+      </label> */}
+
       {/* Totals */}
-      <div className="mt-5 space-y-2 border-t border-border/70 pt-4 text-sm">
+      {/* <div className="mt-5 space-y-2 border-t border-border/70 pt-4 text-sm">
         <div className="flex justify-between">
           <span className="text-muted-foreground">Per plate</span>
           <span className="font-semibold">{formatINR(perPlate)}</span>
@@ -89,17 +110,17 @@ export function CartSummary({ compact = false }: { compact?: boolean }) {
           <span className="font-display text-sm uppercase tracking-wider text-primary">Estimated total</span>
           <span className="font-display text-2xl font-bold text-primary">{formatINR(total)}</span>
         </div>
-      </div>
+      </div> */}
 
       <Link
         to="/quote"
         className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground shadow-gold transition-transform hover:-translate-y-0.5"
       >
-        <FileText className="h-4 w-4" /> Request Quote
+        <FileText className="h-4 w-4" /> Request Order
       </Link>
-      <p className="mt-3 text-center text-xs text-muted-foreground">
+      {/* <p className="mt-3 text-center text-xs text-muted-foreground">
         Indicative pricing. Final quote shared after consultation.
-      </p>
+      </p> */}
     </aside>
   );
 }

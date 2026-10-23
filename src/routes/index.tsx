@@ -35,8 +35,7 @@ function HomePage() {
               <span className="text-gradient-gold">every celebration</span>.
             </h1>
             <p className="mt-5 max-w-xl text-lg text-muted-foreground">
-              Customize your menu from authentic regional classics and instantly
-              calculate your per-plate cost. From intimate gatherings to grand weddings —
+              Customize your menu from authentic regional classics. From intimate gatherings to grand weddings —
               we plate your moments beautifully.
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-3">
@@ -95,8 +94,8 @@ function HomePage() {
         <div className="mx-auto grid max-w-7xl gap-6 px-5 py-14 md:grid-cols-3 lg:px-8">
           {[
             { icon: ChefHat, title: "1. Pick your dishes", desc: "Browse our curated menu and tap to add favorites to your plate." },
-            { icon: Users, title: "2. Set guest count", desc: "Enter how many guests you'll host — pricing updates instantly." },
-            { icon: Calendar, title: "3. Request a quote", desc: "Get a confirmed quote and date with our event manager." },
+            { icon: Users, title: "2. Set guest count", desc: "Enter how many guests you'll host." },
+            { icon: Calendar, title: "3. Request a order", desc: "Get a confirmed order and connect with our event manager." },
           ].map((s) => (
             <div key={s.title} className="rounded-2xl border border-border/70 bg-background/40 p-6">
               <span className="grid h-11 w-11 place-items-center rounded-full bg-primary/15 text-primary">
@@ -175,7 +174,7 @@ function HomePage() {
             A family of <span className="text-gradient-gold">passionate culinary artists</span>
           </h2>
           <p className="mt-4 text-muted-foreground">
-            For over fifteen years, Athithya has plated the most important moments —
+            For over five years, Athithya has plated the most important moments —
             weddings, receptions, corporate galas, birthdays and family gatherings —
             with warmth, hygiene and obsessive attention to flavor. Every dish on our
             menu has been refined across hundreds of events.

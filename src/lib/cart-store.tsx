@@ -26,6 +26,9 @@ type CartContextValue = {
   perPlate: number;
   total: number;
   count: number;
+  customDishes: string[];
+  addCustomDish: (dish: string) => void;
+  removeCustomDish: (index: number) => void;
 };
 
 const CartContext = createContext<CartContextValue | null>(null);
@@ -35,7 +38,7 @@ const STORAGE_KEY = "athithya:cart:v1";
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartMap>({});
   const [guests, setGuests] = useState<number>(100);
-
+  const [customDishes, setCustomDishes] = useState<string[]>([]);
   // Hydrate from localStorage on mount (client-only)
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -44,7 +47,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
       if (raw) {
         const parsed = JSON.parse(raw);
         setItems(parsed.items ?? {});
-        setGuests(parsed.guests ?? 100);
+        setGuests(parsed.guests );
+        setCustomDishes(parsed.customDishes ?? []);
       }
     } catch {
       /* ignore */
@@ -54,7 +58,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   // Persist on change
   useEffect(() => {
     if (typeof window === "undefined") return;
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ items, guests }));
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ items, guests, customDishes }));
   }, [items, guests]);
 
   const value = useMemo<CartContextValue>(() => {
@@ -75,7 +79,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
         else next[id] = qty;
         return next;
       });
-    const clear = () => setItems({});
+    const clear = () => {
+      setItems({});
+      setCustomDishes([]);
+    };
 
     const selectedItems = Object.entries(items)
       .map(([id, qty]) => {
@@ -89,8 +96,18 @@ export function CartProvider({ children }: { children: ReactNode }) {
     const total = perPlate * guests;
     const count = selectedItems.reduce((s, { qty }) => s + qty, 0);
 
-    return { items, guests, setGuests, add, remove, setQty, clear, selectedItems, perPlate, total, count };
-  }, [items, guests]);
+    const addCustomDish = (dish: string) => {
+      if (!dish.trim()) return;
+
+      setCustomDishes((prev) => [...prev, dish.trim()]);
+    };
+
+    const removeCustomDish = (index: number) => {
+      setCustomDishes((prev) => prev.filter((_, i) => i !== index));
+    };
+
+    return { items, guests, setGuests, add, remove, setQty, clear, selectedItems, perPlate, total, count, customDishes,  addCustomDish,  removeCustomDish, };
+  }, [items, guests, customDishes]);
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }

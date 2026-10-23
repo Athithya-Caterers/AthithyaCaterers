@@ -43,7 +43,7 @@ export function MenuItemCard({ item }: { item: MenuItem }) {
       <div className="flex flex-1 flex-col gap-3 p-5">
         <div className="flex items-start justify-between gap-3">
           <h3 className="font-display text-lg font-semibold leading-tight">{item.name}</h3>
-          <span className="shrink-0 font-display text-base font-semibold text-primary">{formatINR(item.price)}</span>
+          {/* <span className="shrink-0 font-display text-base font-semibold text-primary">{formatINR(item.price)}</span> */}
         </div>
         <p className="text-sm text-muted-foreground">{item.description}</p>
 
@@ -56,23 +56,29 @@ export function MenuItemCard({ item }: { item: MenuItem }) {
               <Plus className="h-4 w-4" /> Add to Plate
             </button>
           ) : (
-            <div className="flex w-full items-center justify-between rounded-full border border-primary/40 bg-primary/10 p-1">
-              <button
-                onClick={() => remove(item.id)}
-                aria-label="Decrease"
-                className="grid h-9 w-9 place-items-center rounded-full bg-background text-primary hover:bg-card"
-              >
-                <Minus className="h-4 w-4" />
-              </button>
-              <span className="font-semibold text-primary">{qty}</span>
-              <button
-                onClick={() => add(item.id)}
-                aria-label="Increase"
-                className="grid h-9 w-9 place-items-center rounded-full bg-primary text-primary-foreground"
-              >
-                <Plus className="h-4 w-4" />
-              </button>
-            </div>
+            <button
+              onClick={() => remove(item.id)}
+              className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-primary/40 bg-primary/10 p-1 text-sm font-semibold bg-primary px-4 py-2.5"
+            >
+              <Minus className="h-4 w-4" /> Remove from Plate
+            </button>
+            // <div className="flex w-full items-center justify-between rounded-full border border-primary/40 bg-primary/10 p-1">
+            //   <button
+            //     onClick={() => remove(item.id)}
+            //     aria-label="Decrease"
+            //     className="grid h-9 w-9 place-items-center rounded-full bg-background text-primary hover:bg-card"
+            //   >
+            //     <Minus className="h-4 w-4" />
+            //   </button>
+            //   <span className="font-semibold text-primary">{qty}</span>
+            //   <button
+            //     onClick={() => add(item.id)}
+            //     aria-label="Increase"
+            //     className="grid h-9 w-9 place-items-center rounded-full bg-primary text-primary-foreground"
+            //   >
+            //     <Plus className="h-4 w-4" />
+            //   </button>
+            // </div>
           )}
         </div>
       </div>

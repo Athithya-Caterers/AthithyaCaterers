@@ -3,11 +3,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useCart, formatINR } from "@/lib/cart-store";
 import { ArrowLeft, MessageCircle, Printer, ShoppingBag } from "lucide-react";
+import { useState } from "react";
 
 export const Route = createFileRoute("/quote")({
   head: () => ({
     meta: [
-      { title: "Quote Summary — Athithya Caterers" },
+      { title: "Order Summary — Athithya Caterers" },
       { name: "description", content: "Review your custom menu and per-plate cost estimate." },
     ],
   }),
@@ -17,15 +18,21 @@ export const Route = createFileRoute("/quote")({
 const PHONE = "6363520417";
 
 function QuotePage() {
-  const { selectedItems, perPlate, total, guests, setGuests, clear } = useCart();
+  const { selectedItems, customDishes, addCustomDish, removeCustomDish, perPlate, total, guests, setGuests, clear } = useCart();
+  const [customDishInput, setCustomDishInput] = useState("");
 
   const waText = encodeURIComponent(
-    `Hi Athithya, I'd like a quote for ${guests} guests.\n\n` +
-      selectedItems.map(({ item, qty }) => `• ${item.name} x${qty}`).join("\n") +
-      `\n\nEstimated total: ${formatINR(total)} (${formatINR(perPlate)}/plate)`
+    `Hi Athithya, I'd like to place an order for ${guests} guests.\n\n` +
+    `Menu Items:\n` +
+    selectedItems.map(({ item }) => `• ${item.name}`).join("\n") +
+    (customDishes.length
+      ? `\n\nCustom Dishes:\n${customDishes
+          .map((dish) => `• ${dish}`)
+          .join("\n")}`
+      : "")
   );
 
-  if (selectedItems.length === 0) {
+  if (selectedItems.length === 0 && customDishes.length === 0) {
     return (
       <section className="mx-auto flex max-w-3xl flex-col items-center px-5 py-24 text-center">
         <span className="grid h-16 w-16 place-items-center rounded-full bg-primary/15 text-primary">
@@ -53,7 +60,7 @@ function QuotePage() {
 
       <header className="mt-4">
         <h1 className="font-display text-4xl font-bold lg:text-5xl">
-          Your <span className="text-gradient-gold">quote summary</span>
+          Your <span className="text-gradient-gold">Order summary</span>
         </h1>
         <p className="mt-2 text-muted-foreground">Review the details below, then share with our team to confirm.</p>
       </header>
@@ -61,18 +68,85 @@ function QuotePage() {
       <div className="mt-10 grid gap-8 lg:grid-cols-[1.4fr_1fr]">
         {/* Items list */}
         <div className="rounded-3xl border border-border/70 bg-card/60 p-6">
-          <h2 className="font-display text-xl font-semibold">Selected dishes ({selectedItems.length})</h2>
+          <h2 className="font-display text-xl font-semibold">Selected dishes ({selectedItems.length + customDishes.length})</h2>
           <div className="mt-5 divide-y divide-border/60">
             {selectedItems.map(({ item, qty }) => (
               <div key={item.id} className="flex items-center gap-4 py-4">
                 <img src={item.image} alt={item.name} loading="lazy" width={80} height={80} className="h-16 w-16 rounded-xl object-cover" />
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-semibold">{item.name}</p>
-                  <p className="text-sm text-muted-foreground">{formatINR(item.price)} / plate × {qty}</p>
+                  {/* <p className="text-sm text-muted-foreground">{formatINR(item.price)} / plate × {qty}</p> */}
                 </div>
-                <p className="font-display text-base font-semibold text-primary">{formatINR(item.price * qty)}</p>
+                {/* <p className="font-display text-base font-semibold text-primary">{formatINR(item.price * qty)}</p> */}
               </div>
             ))}
+            {customDishes.length > 0 && (
+            <>
+              <div className="my-5 border-t border-border" />
+
+              {customDishes.map((dish, index) => (
+                <div
+                  key={index}
+                  className="flex items-center justify-between py-4"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="grid h-16 w-16 place-items-center rounded-xl bg-primary/10 text-xl">
+                      🍽️
+                    </div>
+
+                    <div>
+                      <p className="font-semibold">{dish}</p>
+                      <p className="text-sm text-muted-foreground">
+                        Custom Dish
+                      </p>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => removeCustomDish(index)}
+                    className="text-sm text-destructive hover:underline"
+                  >
+                    Remove
+                  </button>
+                </div>
+              ))}
+            </>
+          )}
+          </div>
+          <div className="mt-6 rounded-2xl border border-border bg-background/40 p-4">
+            <h3 className="mb-3 font-semibold">Add Custom Dish</h3>
+
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={customDishInput}
+                placeholder="Example: Live Pasta Counter"
+                onChange={(e) => setCustomDishInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+
+                    if (!customDishInput.trim()) return;
+
+                    addCustomDish(customDishInput);
+                    setCustomDishInput("");
+                  }
+                }}
+                className="flex-1 rounded-xl border border-border bg-background px-4 py-3 outline-none focus:border-primary focus:ring-2 focus:ring-primary/30"
+              />
+
+              <button
+                onClick={() => {
+                  if (!customDishInput.trim()) return;
+
+                  addCustomDish(customDishInput);
+                  setCustomDishInput("");
+                }}
+                className="rounded-xl bg-primary px-5 font-semibold text-primary-foreground"
+              >
+                Add
+              </button>
+            </div>
           </div>
           <button onClick={clear} className="mt-4 text-xs text-muted-foreground hover:text-destructive">
             Clear all items
@@ -88,21 +162,23 @@ function QuotePage() {
             <input
               type="number"
               min={1}
-              value={guests}
-              onChange={(e) => setGuests(Math.max(1, Number(e.target.value) || 0))}
-              className="w-full rounded-xl border border-border bg-background px-4 py-3 text-lg font-semibold outline-none focus:border-primary focus:ring-2 focus:ring-primary/30"
+              value={guests === 0 ? "" : guests}
+              onChange={(e) => setGuests(Number(e.target.value) || 0)}
+              className="w-full rounded-xl border border-border bg-background px-4 py-3 text-lg font-semibold outline-none focus:border-primary focus:ring-2 focus:ring-primary/30
+              [&::-webkit-inner-spin-button]:appearance-none
+              [&::-webkit-outer-spin-button]:appearance-none"
             />
           </label>
 
-          <dl className="mt-5 space-y-2 text-sm">
+          {/* <dl className="mt-5 space-y-2 text-sm">
             <Row k="Per plate" v={formatINR(perPlate)} />
             <Row k="Guests" v={guests.toString()} />
-          </dl>
+          </dl> */}
 
-          <div className="mt-4 rounded-2xl bg-primary/15 p-4">
+          {/* <div className="mt-4 rounded-2xl bg-primary/15 p-4">
             <p className="text-xs uppercase tracking-wider text-primary">Estimated total</p>
             <p className="font-display text-4xl font-bold text-primary">{formatINR(total)}</p>
-          </div>
+          </div> */}
 
           <div className="mt-5 grid gap-2.5">
             <a
@@ -113,23 +189,23 @@ function QuotePage() {
             >
               <MessageCircle className="h-4 w-4" /> Send via WhatsApp
             </a>
-            <Link
+            {/* <Link
               to="/contact"
               className="inline-flex items-center justify-center gap-2 rounded-full bg-primary px-5 py-3 font-semibold text-primary-foreground shadow-gold"
             >
               Confirm via inquiry form
-            </Link>
-            <button
+            </Link> */}
+            {/* <button
               onClick={() => window.print()}
               className="inline-flex items-center justify-center gap-2 rounded-full border border-border bg-background/40 px-5 py-3 font-semibold"
             >
               <Printer className="h-4 w-4" /> Print / save PDF
-            </button>
+            </button> */}
           </div>
 
-          <p className="mt-4 text-xs text-muted-foreground">
+          {/* <p className="mt-4 text-xs text-muted-foreground">
             Indicative estimate. Final pricing depends on venue, date and serving style.
-          </p>
+          </p> */}
         </aside>
       </div>
     </section>
